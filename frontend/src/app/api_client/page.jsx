@@ -1,9 +1,39 @@
 'use client';
 import React, { useState } from 'react';
+import axios  from 'axios';
+
 
 export const Apiclient = () => {
   const [activeTab, setActiveTab] = useState('Query'); // track active tab
   const [response, setResponse] = useState(''); // store API response
+  const [method, setMethod] = useState('GET');
+  const [url, setUrl] = useState('');
+  const [body, setBody] = useState('');
+
+  // send request and save 
+ const handleSend = async () => {
+    try {
+      // Send request to entered URL
+      const apiRes = await axios({
+        method: method.toLowerCase(),
+        url,
+        data: body ? JSON.parse(body) : undefined, // send body only if present
+      });  
+      // Show API response
+      setResponse(JSON.stringify(apiRes.data, null, 2));
+
+      // Save to backend
+      await axios.post('http://localhost:4000/save-request', {
+        method,
+        url,
+        requestBody: body,
+        response: apiRes.data,
+      });
+    } catch (err) {
+      setResponse(`Error: ${err.message}`);
+    }
+  };
+
 
   return (
     <div className="flex h-screen bg-gray-800 text-white">
@@ -20,11 +50,15 @@ export const Apiclient = () => {
 
           <input
             type="text"
+            value={url}
+            onChange={(e)=>setUrl(e.target.value)}
             placeholder="API URL"
             className="border-y p-2 flex-1 bg-gray-700 rounded"
           />
 
-          <button className="border p-2 bg-green-700 text-white rounded">
+          <button 
+          onClick={handleSend}
+          className="border p-2 bg-green-700 text-white rounded">
             Send
           </button>
         </div>
@@ -74,6 +108,8 @@ export const Apiclient = () => {
             <div>
               <p className="text-sm text-gray-400 mb-2">Request body (JSON):</p>
               <textarea
+              value={body}
+              onChange={(e)=>setBody(e.target.value)}
                 placeholder='{"key": "value"}'
                 className="w-full p-2 bg-gray-700 rounded"
               ></textarea>

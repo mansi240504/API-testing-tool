@@ -1,30 +1,20 @@
 const express = require('express');
-//1 line import express.js library const express import it in a variable named express , require express loads the express module
 const Model=require ('../models/user_model');
-//const Model so here Model refers to mongoose model
-//this means you are importing file usermodel.js from models folder 
 const router = express.Router();
-//this creates a new router object from express
-//import dotenv
-require('dotenv').config();
-//import json web token
-const jwt=require('jsonwebtoken');
+
+
 //add
-router.post('/add', (req , res) =>{
+router.post('/add', (req , res) =>{ 
     //router.post create a POST API
     console.log(req.body);
-    //req.body contain JSON data you send in req body
-    //comes undefined in thunder (send krne pe) as it is json format so will add app.use(express.json()) in index.js
-    // res.send('response from the router'); now remove this line 
     new Model(req.body).save()
     //when you call new model mongoose tries to insert data into mongodb that operation is asynchronous so .save() returns a promise 
     .then((result) => {
         res.status(200).json(result);
     }).catch((err) => {
-        // console.log(err);
         res.status(500).json(err);
     });
-});
+}); 
 //if here given post then in thunder first select the option post write localhost:5000/user/add then in
 //  JSON write"name:"sana khan","email":"@....",etc and send then it will run 
 

@@ -11,14 +11,14 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/user",User_router);
-// app.use("/product",ProductRouter);
 
 //endpoint 
-app.get('/', (req, res) => {
+app.post('/add', (req, res) => {
+    console.log('saved Request:',req.body);
     res.send("response from express")
 });
 
-app.get('/add', (req, res) => {
+app.get('/get', (req, res) => {
     res.send("response from add")
 });
 app.get('/getall', (req, res) => {
