@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const User_router= require('./routers/user_router');
+const requestrouter=require('./routers/requestrouter')
 
 const cors =require('cors');
 const port = 5000;  // port kuch bhi de skte hai but kuch port jyada use ki jaate hai
@@ -11,6 +12,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/user",User_router);
+app.use("/api",requestrouter);
 
 //endpoint 
 app.post('/add', (req, res) => {
