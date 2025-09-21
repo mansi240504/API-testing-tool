@@ -13,11 +13,15 @@ export const Apiclient = () => {
   const [lastApiRes, setLastApiRes] = useState(null);
   const [history, setHistory] = useState([]);
 
+  const user = JSON.parse(localStorage.getItem('user'));
+
   // Fetch history from backend
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/history');
+        console.log(res.data);
+
         setHistory(res.data);
       } catch (err) {
         console.error('Failed to fetch history:', err.message);
@@ -48,10 +52,11 @@ export const Apiclient = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/add', {
+      await axios.post('http://localhost:5000/api/add', {
+        userid: user._id,
         method,
         url,
-        requestBody: body,
+        body: body ? JSON.parse(body) : {},
         response: lastApiRes,
       });
       alert('Request saved successfully!');
@@ -66,34 +71,37 @@ export const Apiclient = () => {
   return (
     <div className="flex h-screen bg-gray-800 text-white">
       {/* History Panel */}
-      <div className="w-1/4 border-r p-4 bg-gray-900 overflow-auto">
-        <h2 className="text-lg font-semibold mb-4 text-blue-400">History</h2>
-        {history.length === 0 && (
-          <p className="text-gray-500 text-sm">No history available</p>
-        )}
-        <ul className="space-y-2">
-          {history.map((item, index) => (
-            <li
-              key={index}
-              onClick={() => {
-                setUrl(item.url);
-                setMethod(item.method);
-                setBody(
-                  item.requestBody
-                    ? JSON.stringify(item.requestBody, null, 2)
-                    : ''
-                );
-              }}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded cursor-pointer text-sm"
-            >
-              <p className="font-medium">{item.method} - {item.url}</p>
-              <p className="text-gray-400 text-xs">
-                {new Date(item.createdAt).toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
+<div className="w-1/4 border-r p-4 bg-gray-900 overflow-auto">
+  <h2 className="text-lg font-semibold mb-4 text-blue-400">History</h2>
+  {history.length === 0 && (
+    <p className="text-gray-500 text-sm">No history available</p>
+  )}
+  <ul className="space-y-2">
+    {history.map((item, index) => (
+      <li
+        key={index}
+        onClick={() => {
+          setUrl(item.url);
+          setMethod(item.method);
+          setBody(
+            item.body
+              ? JSON.stringify(item.body, null, 2)
+              : ''
+          );
+          // Switch to Body tab so saved content becomes visible
+          setActiveTab('Body');
+        }}
+        className="p-2 bg-gray-800 hover:bg-gray-700 rounded cursor-pointer text-sm"
+      >
+        <p className="font-medium">{item.method} - {item.url}</p>
+        <p className="text-gray-400 text-xs">
+          {new Date(item.createdAt).toLocaleString()}
+        </p>
+      </li>
+    ))}
+  </ul>
+</div>
+
 
       {/* Left Panel */}
       <div className="w-2/4 flex flex-col border p-5">
@@ -139,11 +147,10 @@ export const Apiclient = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 ${
-                activeTab === tab
+              className={`pb-2 ${activeTab === tab
                   ? 'border-b-2 border-blue-500 text-blue-400 font-semibold'
                   : 'text-gray-400 hover:text-white'
-              }`}
+                }`}
             >
               {tab}
             </button>
