@@ -15,9 +15,10 @@ export const Apiclient = () => {
   const [lastApiRes, setLastApiRes] = useState(null);
   const [history, setHistory] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem('user'));
+const storedUser = localStorage.getItem('user');
+const user = storedUser ? JSON.parse(storedUser) : null;
 
-  // Fetch history from backend
+  // Fetch history from backend 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
