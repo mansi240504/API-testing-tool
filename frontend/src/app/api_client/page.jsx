@@ -1,5 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { CopyBlock, dracula } from "react-code-blocks";
+
 import axios from 'axios';
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE'];
@@ -173,13 +175,23 @@ export const Apiclient = () => {
             />
           )}
           {activeTab === 'Body' && (
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder='{"key": "value"}'
-              className="w-full p-2 bg-gray-700 rounded"
-            ></textarea>
-          )}
+  <div className="h-64 overflow-auto rounded">
+    <CopyBlock
+      text={body || '{\n  "key": "value"\n}'}
+      language="json"
+      theme={dracula}
+      wrapLines
+      codeBlock
+    />
+    <textarea
+      value={body}
+      onChange={(e) => setBody(e.target.value)}
+      placeholder='{"key": "value"}'
+      className="w-full p-2 bg-gray-900 text-white rounded mt-2"
+    />
+  </div>
+)}
+
         </div>
       </div>
 
